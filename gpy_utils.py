@@ -179,3 +179,56 @@ def load_xlsx2dict(filename):
     return df_dict
 
 
+## load config yaml file and update args
+def parse_config(args, config_file = 'config.yaml', config_attr='config_file'):
+    import os
+    import yaml
+    ## adopted from: https://codereview.stackexchange.com/questions/79008/parse-a-config-file-and-add-to-command-line-arguments-using-argparse-in-python
+    ## add path when absolute path is not given and given relative path/file does not exist
+    if not os.path.isfile(config_file):
+        print('ERROR: config_file: {} not found!'.format(config_file))
+        sys.exit(1)
+
+    print('Using config_file: ', config_file)
+    with open(config_file) as yaml_fh:
+        config_dict = yaml.load(yaml_fh)
+        delattr(args, config_attr)
+        args_dict = args.__dict__
+        ##print('config_file args: ', config_dict)
+        for key, value in config_dict.items():
+            if key not in args_dict.keys():
+                print('ERROR: Invalid arg {} found in config_file!'.format(key))
+                sys.exit(1)
+            elif isinstance(value, list):
+                args_dict[key].extend(value)
+            elif not args_dict[key]:  ## command-line option NOT set by user, use config_file option.
+                args_dict[key] = value
+                ##print('config yaml {} arg: {}'.format(key, value))
+            else:  ## command-line option set by user, ignore config_file option.
+                print('override config yaml {} arg: {} => {}'.format(key, value, args_dict[key]))
+    return args
+
+
+def flatten(seq, uniquify=True):
+    """flatten(sequence) -> list
+
+    Returns a single, flat list which contains all elements retrieved
+    from the sequence and all recursively contained sub-sequences
+    (iterables).
+
+    Examples:
+    >>> [1, 2, [3,4], (5,6)]
+    [1, 2, [3, 4], (5, 6)]
+    >>> flatten([[[1,2,3], (42,None)], [4,5], [6], 7, MyVector(8,9,10)])
+    [1, 2, 3, 42, None, 4, 5, 6, 7, 8, 9, 10]"""
+
+    result = []
+    for el in seq:
+        #if isinstance(el, (list, tuple)):
+        if hasattr(el, "__iter__") and not isinstance(el, str):
+            result.extend(flatten(el))
+        else:
+            result.append(el)
+    if uniquify:
+        result = list(set(result))
+    return result
