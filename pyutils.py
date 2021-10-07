@@ -68,7 +68,7 @@ Function to get average of a list: use mean() function from statistics module.
 ''' 
 
 
-def init_logger(name, logfile='', logdir='', log_level = None):
+def init_logger(name, logfile='', logdir='', log_level = None, console=True):
     '''
     Initialize logger and retun log object.
         name: name of the logger, __name__ recommended
@@ -89,11 +89,13 @@ def init_logger(name, logfile='', logdir='', log_level = None):
         logfile = os.path.join(logdir, logfile)
 
     formatter = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s', '%Y/%b/%d-%H:%M:%S')
-    log_ch = logging.StreamHandler()
-    log_ch.setFormatter(formatter)
-    log_ch.setLevel(log_level)
-    log.addHandler(log_ch)
-    if logfile:
+    if console:  # create console handler for logger
+        log_ch = logging.StreamHandler()
+        log_ch.setFormatter(formatter)
+        log_ch.setLevel(log_level)
+        log.addHandler(log_ch)
+
+    if logfile: # create file handler for logger
         log_fh = logging.FileHandler(filename=logfile, mode='w')
         log_fh.setFormatter(formatter)
         log_fh.setLevel(log_level)

@@ -2,3 +2,6 @@
 __pycache__/
 *.py[cod]
 *$py.class
+# gvim swap and backup files
+.*.sw*
+*.*~
