@@ -234,3 +234,17 @@ def flatten(seq, uniquify=True):
     if uniquify:
         result = list(set(result))
     return result
+
+
+## prompt yes or no question to user
+def yes_or_no(question):
+    reply = input(question+' (y/n): ').lower().strip()
+    if not reply: ## empty reply
+        return yes_or_no("Uhhhh... please enter ")
+
+    if reply[0] == 'y':
+        return True
+    if reply[0] == 'n':
+        return False
+    else:
+        return yes_or_no("Uhhhh... please enter ")
