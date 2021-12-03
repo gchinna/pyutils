@@ -62,31 +62,46 @@ def get_date_suffix():
     return date_suffix
 
 
+def to_str(seq, sep='\n  '):
+   '''convert iterables by joining the items with {sep} and return single string'''
+   return sep + sep.join(seq)
+
 
 '''
 Function to get average of a list: use mean() function from statistics module.
 ''' 
 
 
-def init_logger(name, logfile='', logdir='', log_level = None, console=True):
+def init_logger(name, script=None, logfile=None, logdir=None, debug=False, log_level=None, console=True):
     '''
     Initialize logger and retun log object.
         name: name of the logger, __name__ recommended
-        logfile: name of log file. When empty, logfile is not created
-        logdir: Optional logfile dir. Default: Current dir
-        log_level: Optional log level. Default: INFO
+        script: name of the script, __file__ recommended 
+                {script}.log is used as logfile by default
+        logfile: Optional explicit logfile override
+        logdir: Optional logfile dir, Default: Current dir
+        debug: Optional enable debug log level, Default: logging.INFO
+        log_level: Optional explicit log level override
     '''
-    import logging
-    import os
+    import logging, os
+    from pathlib import Path
 
     if not log_level:
-        log_level = logging.INFO   ## default level
+        log_level = logging.DEBUG if debug or os.getenv('DEBUG', False) else logging.INFO
 
     log = logging.getLogger(name)
     log.setLevel(log_level)
     
+    if not logfile and script:
+      ## if {script}.py file name is provided, use {script}.log as logfile
+        script_path = Path(script)
+        logfile = script_path.stem + '.log'
+
     if logfile and logdir:
-        logfile = os.path.join(logdir, logfile)
+        log_path = Path(logdir)
+        logfile = log_path.joinpath(logdir, logfile)
+    elif logfile:
+        logfile = Path(logfile)
 
     formatter = logging.Formatter('%(asctime)s: %(name)s: %(levelname)s: %(message)s', '%Y/%b/%d-%H:%M:%S')
     if console:  # create console handler for logger
@@ -183,11 +198,11 @@ def load_xlsx2dict(filename):
 
 ## load config yaml file and update args
 def parse_config(args, config_file = 'config.yaml', config_attr='config_file'):
-    import os
+    from pathlib import Path
     import yaml
     ## adopted from: https://codereview.stackexchange.com/questions/79008/parse-a-config-file-and-add-to-command-line-arguments-using-argparse-in-python
     ## add path when absolute path is not given and given relative path/file does not exist
-    if not os.path.isfile(config_file):
+    if not Path(config_file).is_file():
         print('ERROR: config_file: {} not found!'.format(config_file))
         sys.exit(1)
 
