@@ -67,40 +67,51 @@ def get_date_suffix():
     return date_suffix
 
 
-def to_str(seq, sep='\n  '):
-   '''convert iterables by joining the items with {sep} and return single string'''
-   return sep + sep.join(seq)
+def to_str(seq, sep="\n  "):
+    """convert iterables by joining the items with {sep} and return single string"""
+    return sep + sep.join(seq)
 
 
-'''
+"""
 Function to get average of a list: use mean() function from statistics module.
-'''
+"""
 
 
-def init_logger(name, script=None, logfile=None, logdir=None, debug=False, log_level=None, console=True):
-    '''
+def init_logger(
+    name,
+    script=None,
+    logfile=None,
+    logdir=None,
+    debug=False,
+    log_level=None,
+    console=True,
+):
+    """
     Initialize logger and retun log object.
         name: name of the logger, __name__ recommended
-        script: name of the script, __file__ recommended 
+        script: name of the script, __file__ recommended
                 {script}.log is used as logfile by default
         logfile: Optional explicit logfile override
         logdir: Optional logfile dir, Default: Current dir
         debug: Optional enable debug log level, Default: logging.INFO
         log_level: Optional explicit log level override
-    '''
-    import logging, os
+    """
+    import logging
+    import os
     from pathlib import Path
 
     if not log_level:
-        log_level = logging.DEBUG if debug or os.getenv('DEBUG', False) else logging.INFO
+        log_level = (
+            logging.DEBUG if debug or os.getenv("DEBUG", False) else logging.INFO
+        )
 
     log = logging.getLogger(name)
     log.setLevel(log_level)
-    
+
     if not logfile and script:
-      ## if {script}.py file name is provided, use {script}.log as logfile
+        # if {script}.py file name is provided, use {script}.log as logfile
         script_path = Path(script)
-        logfile = script_path.stem + '.log'
+        logfile = script_path.stem + ".log"
     if logfile and logdir:
         log_path = Path(logdir)
         logfile = log_path.joinpath(logdir, logfile)
