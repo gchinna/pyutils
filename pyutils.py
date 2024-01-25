@@ -1,3 +1,6 @@
+import time
+
+
 def python_info(path=False):
     import sys
 
@@ -19,6 +22,12 @@ def contains_all(seq, subseq):
         if c not in seq:
             return False
     return True
+
+
+def remove_any(seq, subseq):
+    for c in subseq:
+        if c in seq:
+            seq.remove(c)
 
 
 def replace_prefix(prefix, to, text):
@@ -44,7 +53,7 @@ def remove_prefix(prefix, text, strip=True):
     if strip:
         text = text.strip()
     if text.startswith(prefix):
-        return text[len(prefix) :]
+        return text[len(prefix):]
     return text
 
 
@@ -70,6 +79,33 @@ def get_date_suffix():
 def to_str(seq, sep="\n  "):
     """convert iterables by joining the items with {sep} and return single string"""
     return sep + sep.join(seq)
+
+
+def trunc_str(text, width=40, suffix="..."):
+    """truncate string longer than width to width including suffix"""
+    if isinstance(text, str) and len(text) > width:
+        return text[: width - len(suffix)] + suffix
+    else:
+        return text
+
+
+def time_hms(duration: time) -> str:
+    """convert time duration in seconds to hours::mins::seconds format"""
+    # hours, remainder = divmod(duration, 3600)
+    # minutes, seconds = divmod(remainder, 60)
+    # hours, minutes = int(hours), int(minutes)
+    # return f"{hours}h::{minutes}m::{seconds:.2f}s"
+    # time.gmtime() => convert time in seconds to a struct_time in UTC
+    ts = time.gmtime(duration)
+    return f"{ts.tm_hour}h::{ts.tm_min}m::{ts.tm_sec}s"
+
+
+def time_diff_hms(start_time: time, end_time=None) -> str:
+    """convert time_diff to hours::mins::seconds format"""
+    if not end_time:  # use current time as end time by default
+        end_time = time.time()
+    time_diff = end_time - start_time
+    return time_hms(time_diff)
 
 
 """
@@ -194,7 +230,7 @@ def save_dict2xlsx(df_dict, filename, out_columns=None, wr_index=None):
         # use first 10 and last 20 chars when the length is longer
         sname_len = len(sheet_name)
         if sname_len > 31:
-            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20) :])
+            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20):])
         # drop the columns that do not exist in df
         # df_columns = list(set(out_columns) & set(df.columns))
         # use for loop to retain the order of columns
