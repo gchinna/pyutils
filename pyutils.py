@@ -1,4 +1,5 @@
 import time
+from typing import Iterable
 
 
 def python_info(path=False):
@@ -62,6 +63,17 @@ def remove_suffix(suffix, text, strip=True):
         text = text.strip()
     if text.endswith(suffix):
         return text[: -len(suffix)]
+
+
+# add suffix to str or iterable and return the result
+# type hints | added in Python 3.10+
+def add_suffix(suffix: str, seq: str | Iterable[str]) -> str | list:
+    if isinstance(seq, str):
+        return seq + suffix
+    elif isinstance(seq, Iterable[str]):
+        return [x + suffix for x in seq]
+    else:
+        raise TypeError("Invalid Type for inp, expected: list or str!")
 
 
 def get_date_suffix():
@@ -298,7 +310,7 @@ def parse_config(args, config_file="config.yaml", config_attr="config_file"):
     return args
 
 
-def flatten(seq, uniquify=True):
+def flatten(seq, uniquify=True) -> list:
     """flatten(sequence) -> list
 
     Returns a single, flat list which contains all elements retrieved
