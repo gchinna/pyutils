@@ -54,7 +54,7 @@ def remove_prefix(prefix, text, strip=True):
     if strip:
         text = text.strip()
     if text.startswith(prefix):
-        return text[len(prefix):]
+        return text[len(prefix) :]
     return text
 
 
@@ -113,11 +113,33 @@ def time_hms(duration: time) -> str:
 
 
 def time_diff_hms(start_time: time, end_time=None) -> str:
-    """convert time_diff to hours::mins::seconds format"""
+    """convert time_diff in seconds to hours::mins::seconds format"""
     if not end_time:  # use current time as end time by default
         end_time = time.time()
     time_diff = end_time - start_time
     return time_hms(time_diff)
+
+
+def time_diff_ns(start_time: int, end_time=None) -> str:
+    """convert time_diff in nanoseconds to seconds::milliseconds::microseconds::nanoseconds format"""
+    if not end_time:  # use current time as end time by default
+        end_time = time.time_ns()
+    duration = end_time - start_time
+    seconds, remainder = divmod(duration, pow(10, 9))
+    # remainder => less than a second in nanoseconds
+    milliseconds, remainder = divmod(remainder, pow(10, 6))
+    # remainder => less than a millisecond in nanoseconds
+    microseconds, nanoseconds = divmod(remainder, pow(10, 3))
+    seconds, milliseconds, microseconds, nanoseconds = (
+        int(seconds),
+        int(milliseconds),
+        int(microseconds),
+        int(nanoseconds),
+    )
+    if seconds > 0:
+        return f"{seconds}s::{milliseconds}ms::{microseconds}us::{nanoseconds}ns"
+    else:
+        return f"{milliseconds}ms::{microseconds}us::{nanoseconds}ns"
 
 
 """
@@ -242,7 +264,7 @@ def save_dict2xlsx(df_dict, filename, out_columns=None, wr_index=None):
         # use first 10 and last 20 chars when the length is longer
         sname_len = len(sheet_name)
         if sname_len > 31:
-            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20):])
+            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20) :])
         # drop the columns that do not exist in df
         # df_columns = list(set(out_columns) & set(df.columns))
         # use for loop to retain the order of columns
