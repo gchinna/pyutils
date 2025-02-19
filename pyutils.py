@@ -54,7 +54,7 @@ def remove_prefix(prefix, text, strip=True):
     if strip:
         text = text.strip()
     if text.startswith(prefix):
-        return text[len(prefix) :]
+        return text[len(prefix):]
     return text
 
 
@@ -264,7 +264,7 @@ def save_dict2xlsx(df_dict, filename, out_columns=None, wr_index=None):
         # use first 10 and last 20 chars when the length is longer
         sname_len = len(sheet_name)
         if sname_len > 31:
-            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20) :])
+            sheet_name = "{}-{}".format(sheet_name[:10], sheet_name[(sname_len - 20):])
         # drop the columns that do not exist in df
         # df_columns = list(set(out_columns) & set(df.columns))
         # use for loop to retain the order of columns
